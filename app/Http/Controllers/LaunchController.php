@@ -27,7 +27,6 @@ class LaunchController extends Controller
 
         if ($response->successful()) {
             $data = $this->paginate($response->json(), $pageSize, $page)
-                ->withPath('launches')
                 ->appends(['size' => $pageSize]);
         } else {
             $error = true;

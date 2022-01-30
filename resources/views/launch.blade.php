@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Launch - ' . $data['mission_name'] . ' - ' . config('app.name'))
+
 @section('content')
 	<!-- Header-->
     <header class="bg-dark py-2">
@@ -51,8 +53,8 @@
 		            		<h3>Launch Site</h3>
 
 		            		<div class="row">
-			            		<div class="col-md-4">Id: {{ $data['launch_site']['site_id'] }}</div>
-			            		<div class="col-md-8">Name: {{ $data['launch_site']['site_name_long'] }}</div>
+			            		<div class="col-md-4">Id: <span class="text-info">{{ $data['launch_site']['site_id'] }}</span></div>
+			            		<div class="col-md-8">Name: <span class="text-info">{{ $data['launch_site']['site_name_long'] }}</span></div>
 		            		</div>
 	            		</div>
 	        		</div>
@@ -64,9 +66,9 @@
 		            		<h3>Rocket</h3>
 
 		            		<div class="row">
-			            		<div class="col-md-4">Id: {{ $data['rocket']['rocket_id'] }}</div>
-			            		<div class="col-md-4">Name: {{ $data['rocket']['rocket_name'] }}</div>
-			            		<div class="col-md-4">Type: {{ $data['rocket']['rocket_type'] }}</div>
+			            		<div class="col-md-4">Id: <span class="text-info">{{ $data['rocket']['rocket_id'] }}</span></div>
+			            		<div class="col-md-4">Name: <span class="text-info">{{ $data['rocket']['rocket_name'] }}</span></div>
+			            		<div class="col-md-4">Type: <span class="text-info">{{ $data['rocket']['rocket_type'] }}</span></div>
 		            		</div>
 	            		</div>
 	        		</div>

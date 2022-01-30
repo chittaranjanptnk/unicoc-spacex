@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Launches - ' . config('app.name'))
+
 @section('content')
 	<!-- Header-->
     <header class="bg-dark py-2">
@@ -15,19 +17,19 @@
         	@include('alert')
 
         	@if (!empty($error))
-                <div class="row gx-4 gx-lg-5 row-cols-12 row-cols-md-12 row-cols-xl-12 justify-content-center">
+                <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-12 row-cols-xl-12 justify-content-center">
                 	<div class="alert alert-danger">
 	                	<p>There is some issue with the API. Please check back soon.</p>
                 	</div>
                 </div>
         	@elseif ($data->count())
-                <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-3 row-cols-xl-4 justify-content-center">
                 	@foreach($data as $launch)
                 		<div class="col mb-5">
 	                        <div class="card h-100">
 	                            <!-- Sale badge-->
 	                            @if ($launch['launch_success'])
-		                            <div class="badge bg-info text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Success</div>
+		                            <div class="badge bg-success text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Success</div>
 	                            @endif
 
 	                            <!-- Product image-->
@@ -41,8 +43,8 @@
 	                            <div class="card-body p-4">
 	                                <div class="text-center">
 	                                    <!-- Product name-->
-	                                    <h5 class="fw-bolder text-success">
-	                                    	<a href="{{ route('launches-show', $launch['flight_number']) }}">{{ $launch['mission_name'] }}</a>
+	                                    <h5 class="fw-bolder">
+	                                    	<a href="{{ route('launches-show', $launch['flight_number']) }}" class="text-info">{{ $launch['mission_name'] }}</a>
 	                                    </h5>
 	                                    <!-- Product price-->
 	                                    <p>On: <strong>{{ date('jS M Y h:iA', $launch['launch_date_unix']) }}</strong></p>
@@ -52,18 +54,18 @@
 	                            </div>
 	                            <!-- Product actions-->
 	                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-	                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="{{ route('launches-show', $launch['flight_number']) }}">View Details</a></div>
+	                                <div class="text-center"><a class="btn btn-outline-info mt-auto" href="{{ route('launches-show', $launch['flight_number']) }}">View Details</a></div>
 	                            </div>
 	                        </div>
 	                    </div>
                 	@endforeach
                 </div>
 
-                <div class="row gx-4 gx-lg-5 row-cols-12 row-cols-md-12 row-cols-xl-12 justify-content-center">
-                	{{ $data->onEachSide(1)->links() }}
-            	</div>
+                <div class="page-links">
+	            	{{ $data->onEachSide(2)->links() }}
+                </div>
         	@else
-                <div class="row gx-4 gx-lg-5 row-cols-12 row-cols-md-12 row-cols-xl-12 justify-content-center">
+                <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-12 row-cols-xl-12 justify-content-center">
                 	<div class="alert alert-info">
 	                	<p>No matching records found.</p>
                 	</div>
