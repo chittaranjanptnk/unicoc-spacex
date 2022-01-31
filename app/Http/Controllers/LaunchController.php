@@ -11,53 +11,80 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class LaunchController extends Controller
 {
+    protected $api_url = NULL;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->api_url = config('spacex.api_url');
+    }
+
+    /**
+     * Show launches from api
+     * @return view
+     */
     public function index()
     {
         $error = false;
         $data = [];
         $page = request()->get('page', 0);
-        $pageSize = request()->get('size', 20);
+        $pageSize = request()->get('size', config('spacex.page_size'));
 
         $queryParams = [
             'sort' => 'launch_date_unix',
             'order' => 'desc'
         ];
 
-        $response = Http::get('https://api.spacexdata.com/v3/launches', $queryParams);
+        try {
+            $response = Http::get($this->api_url . 'launches', $queryParams);
 
-        if ($response->successful()) {
-            $data = $this->paginate($response->json(), $pageSize, $page)
-                ->appends(['size' => $pageSize]);
-        } else {
+            if ($response->successful()) {
+                $data = $this->paginate($response->json(), $pageSize, $page)
+                    ->withPath('launches')
+                    ->appends(['size' => $pageSize]);
+            } else {
+                $error = true;
+            }
+        } catch(Exception $ex) {
             $error = true;
         }
 
-        return view('launches', compact('error', 'data'));
+        return view('launches.index', compact('error', 'data'));
     }
 
+    /**
+     * Show launch details
+     * @param  int $flightNumber
+     * @return view
+     */
     public function show($flightNumber)
     {
         $error = false;
-        $response = Http::get('https://api.spacexdata.com/v3/launches/' . $flightNumber);
 
-        if ($response->successful()) {
-            $data = $response->json();
+        try {
+            $response = Http::get($this->api_url . 'launches/' . $flightNumber);
 
-            // dd($data);
-            return view('launch', compact('error', 'data'));        
-        } elseif ($response->status() == '404') {
-            session()->flash('error', 'The requested launch was not found.');
-        } else {
-            session()->flash('error', 'Something went wrong');
+            if ($response->successful()) {
+                $data = $response->json();
+
+                return view('launches.item', compact('error', 'data'));        
+            } elseif ($response->status() == '404') {
+                session()->flash('error', 'The requested launch was not found.');
+            } else {
+                session()->flash('error', 'Something went wrong');
+            }
+        } catch(Exception $ex) {
+            session()->flash('error', 'There is some issue with the API. Please check back soon.');
         }
 
         return redirect()->route('launches');
     }
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
+     * Generate pagination
+     * @return object
      */
     public function paginate($items, $perPage = 5, $page = null, $options = [])
     {

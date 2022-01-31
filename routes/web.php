@@ -14,5 +14,6 @@ use App\Http\Controllers\LaunchController;
 |
 */
 
-Route::get('/', [LaunchController::class, 'index'])->name('launches');
+Route::get('/', [LaunchController::class, 'index'])->name('home-launches');
+Route::get('/launches', [LaunchController::class, 'index'])->name('launches');
 Route::get('/launches/{flightNumber}', [LaunchController::class, 'show'])->name('launches-show')->where('flightNumber', '[0-9]+');

@@ -67,7 +67,7 @@
         	@else
                 <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-12 row-cols-xl-12 justify-content-center">
                 	<div class="alert alert-info">
-	                	<p>No matching records found.</p>
+	                	<p>No matching launches found.</p>
                 	</div>
                 </div>
             @endif
