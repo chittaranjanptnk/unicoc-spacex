@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 
+use App\Utility\GoogleDrive;
+
 use Storage;
 
 class DbBackUp extends Command
@@ -22,8 +24,8 @@ class DbBackUp extends Command
      * @var string
      */
     protected $description = 'Backs up your database';
-    protected $dbFile = NULL;
-    protected $dbFileName = NULL;
+    protected $dbFile = null;
+    protected $dbFileName = null;
 
     /**
      * Create a new command instance.
@@ -45,7 +47,6 @@ class DbBackUp extends Command
      */
     public function handle()
     {
-        // $dbFile = "backup-" . date('YmdHis') . ".sql";
         $dbUser = env('DB_USERNAME');
         $dbPassword = env('DB_PASSWORD');
         $dbHost = env('DB_HOST');
@@ -68,27 +69,23 @@ class DbBackUp extends Command
      */
     protected function upload()
     {
-        \Log::info(env('GOOGLE_DRIVE_API_KEY'));
-            \Log::info(url('storage/' . $this->dbFile));
-        // if (Storage::disk('local')->exists($this->dbFile)) {
-            $response = Http::withOptions([
-                    'debug' => true,
-                    'scope' => 'https://www.googleapis.com/auth/drive.file'
-                ])
-                // ->withToken(env('GOOGLE_DRIVE_API_KEY'))
-                ->attach('attachment', file_get_contents(url('storage/' . $this->dbFile)), $this->dbFileName)
-                // ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media');
-                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media&key=' . env('GOOGLE_DRIVE_API_KEY'));
+        $fileData = [
+            'name' => $this->dbFileName,
+            'path' => storage_path($this->dbFile),
+        ];
 
-            if ($response->successful()) {
-                \Log::info('Back up file uploaded successfully.');
+        $googleDrive = new GoogleDrive();
+
+        if (!empty($googleDrive)) {
+            $uploaded = $googleDrive->uploadFile($fileData);
+
+            if ($uploaded > 0) {
+                \Log::info('File uploaded successfully.');
             } else {
-                \Log::error('Back up file could not be uploaded.');
+                \Log::error('File could not be uploaded.');
             }
-
-            dd($response);
-        /*} else {
-            \Log::error('No back up file found.');
-        }*/
+        } else {
+            \Log::error('Issue in initializing google drive client.');
+        }
     }
 }
