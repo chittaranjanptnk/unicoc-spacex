@@ -1,66 +1,38 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+## Project Overview
+We will implement the functionality to back up the project database and upload the backup file to Google drive. We will also integrate [SpaceX Launches API](https://docs.spacexdata.com/#bc65ba60-decf-4289-bb04-4ca9df01b9c1) to show a list of launches as well as individual launch details.
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Installation
+1. Open your terminal, create a directory in your project folder and get inside that directory.
+`mkdir spacex`
+`cd spacex/`
 
-## About Laravel
+2. Clone the repo and complete composer installation process
+`git clone https://github.com/chittaranjanptnk/unicoc-spacex.git .`
+`composer install`
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+3. Generate the .env file and set it up
+`cp .env.example .env`
+`php artisan key:generate`
+Set the `APP_URL` as per your set up. Assume `http://localhost` in this case
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+4. Create the database and set the credentials in `.env` and run the migration to create the tables
+`php artisan migrate`
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+5. Create a project through Google console and select/enable Google Drive API. Also need to create the credentials to access your enabled APIs. You need to copy the **API Key**, **OAuth Client ID** and **Secret**. Make sure you configure it properly so that it recongnizes your web app. You also need to download the json having above credentials.
+![Google app screenshot](https://drive.google.com/file/d/1RIukJEeh2Wvj8eHpu5HG_XeBrSqAwunI/view)
 
-## Learning Laravel
+6. In the terminal, create a directory inside `storage` -> `app` -> `google` and make sure that's writable. You need to copy the above downloaded json file to this `google` directory and rename that to `auth.json`. One thing to note is whenever you make some setting related changes in your Google app, you need to download a fresh json file and overwrite the `auth.json` in your project directory.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+7. Set the **API Key**, **OAuth Client ID** and **Secret** against **GOOGLE_DRIVE_API_KEY**, **GOOGLE_DRIVE_CLIENT_ID** and **GOOGLE_DRIVE_CLIENT_SECRET** in the `.env` file respectively.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+8. Now run the project with following command and you should be able to access this when you run `http://localhost:8000` in the browser. This should match with the allowed domains/redirect uris list in the google app settings.
+`php artisan serve`
+![Authorized Redirect URIs](https://drive.google.com/file/d/13dC985rDyJq2j1Aj-NV5SjyBm8HYVLO4/view)
 
-## Laravel Sponsors
+9. Open a new tab in the terminal and using `php artisan tinker`, try to create an object of `GoogleDrive` class like `new App\Utility\GoogleDrive()`. It will show a link to generate the verification code. Copy, paste that url in the browser and you need to go through the authorize process. Then copy the code from url and paste that in the console. It stores the token inside `storage\app\google\token.json` file. You can use this [url decode function](https://www.functions-online.com/urldecode.html) to decode that url which may be needed in some cases.
+![Verification Link Generator](https://drive.google.com/file/d/1wtrFNou92mj78BFAaILbPCg75V2UQJfn/view)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+10. Come out of the tinker mode and create a directory inside `storage` -> `app` -> `backup` and make sure that's writable. Now we will run the database backup script `php artisan db:backup`. It should create an sql backup file and store that in the above directory. At the same time, it will upload that to the Google drive which you can look for.
+![Google Drive Backup File](https://drive.google.com/file/d/1HYOVWzcQugY0MM4oor_ffZ3Awzu8xgk9/view)
 
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[CMS Max](https://www.cmsmax.com/)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-- **[Romega Software](https://romegasoftware.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+11. As far as the SpaceX launches API is concerned, you can access the same when you run `http://localhost:8000` in the browser. You can click on each item to show the details for that launch.
